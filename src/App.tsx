@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import {
   Activity,
   ArrowRight,
@@ -17,6 +17,14 @@ import {
 } from 'lucide-react'
 
 type TabKey = 'portal' | 'dashboard' | 'reports' | 'config'
+
+type FormState = {
+  name: string
+  category: string
+  channel: string
+  message: string
+  isAnonymous: boolean
+}
 
 const metrics = [
   { label: 'Manifestações hoje', value: '184', accent: 'bg-cyan-500/15 text-cyan-200', icon: MessageSquareText },
@@ -64,8 +72,31 @@ const navItems: { key: TabKey; label: string }[] = [
   { key: 'config', label: 'Configuração' }
 ]
 
+const initialForm: FormState = {
+  name: '',
+  category: 'Reclamação',
+  channel: 'Portal',
+  message: '',
+  isAnonymous: false
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('portal')
+  const [form, setForm] = useState<FormState>(initialForm)
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = event.target
+
+    if (type === 'checkbox') {
+      const checkbox = event.target as HTMLInputElement
+      setForm((previous) => ({ ...previous, [name]: checkbox.checked }))
+      return
+    }
+
+    setForm((previous) => ({ ...previous, [name]: value }))
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -173,6 +204,113 @@ function App() {
                   <p className="mt-2 text-sm text-slate-300">{detail}</p>
                 </div>
               ))}
+            </section>
+
+            <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+                <div className="flex items-center gap-3">
+                  <MessageSquareText className="h-6 w-6 text-cyan-300" />
+                  <h3 className="text-2xl font-semibold text-white">Submeter manifestação</h3>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <label className="block text-sm text-slate-300">
+                    Nome / identificador
+                    <input
+                      className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none ring-0 transition focus:border-cyan-500"
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      placeholder="Ex.: Ana Mário"
+                    />
+                  </label>
+
+                  <label className="block text-sm text-slate-300">
+                    Tipo
+                    <select
+                      className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none transition focus:border-cyan-500"
+                      name="category"
+                      value={form.category}
+                      onChange={handleChange}
+                    >
+                      <option>Reclamação</option>
+                      <option>Sugestão</option>
+                      <option>Elogio</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="block text-sm text-slate-300">
+                    Canal preferido
+                    <select
+                      className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none transition focus:border-cyan-500"
+                      name="channel"
+                      value={form.channel}
+                      onChange={handleChange}
+                    >
+                      <option>Portal</option>
+                      <option>WhatsApp</option>
+                      <option>SMS</option>
+                      <option>Presencial</option>
+                    </select>
+                  </label>
+
+                  <label className="mt-6 flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-200 md:mt-8">
+                    <input
+                      type="checkbox"
+                      name="isAnonymous"
+                      checked={form.isAnonymous}
+                      onChange={handleChange}
+                      className="h-4 w-4 accent-cyan-500"
+                    />
+                    manifesto anonimamente
+                  </label>
+                </div>
+
+                <label className="mt-4 block text-sm text-slate-300">
+                  Descrição
+                  <textarea
+                    className="mt-2 min-h-[120px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none transition focus:border-cyan-500"
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Descreva a sua situação, sugestão ou elogio..."
+                  />
+                </label>
+
+                <div className="mt-5 flex justify-end">
+                  <button type="button" className="rounded-xl bg-emerald-500 px-4 py-2.5 font-medium text-slate-950 transition hover:bg-emerald-400">
+                    Enviar solicitação
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+                <div className="flex items-center gap-3">
+                  <Activity className="h-6 w-6 text-violet-300" />
+                  <h3 className="text-2xl font-semibold text-white">Consulta de estado</h3>
+                </div>
+
+                <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-950/60 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Protocolo</p>
+                  <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-900 p-3">
+                    <span className="font-semibold text-white">UG-2408</span>
+                    <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-200">Em análise</span>
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-4">
+                  <div className="rounded-2xl border border-slate-700 bg-slate-950/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Etapa atual</p>
+                    <p className="mt-2 text-lg font-medium text-white">A validação da reclamação está em curso</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-700 bg-slate-950/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Resposta prevista</p>
+                    <p className="mt-2 text-lg font-medium text-white">Até 48 horas úteis</p>
+                  </div>
+                </div>
+              </div>
             </section>
           </>
         )}
