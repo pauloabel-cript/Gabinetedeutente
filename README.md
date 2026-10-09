@@ -44,12 +44,14 @@ npm run dev
 npm run build
 ```
 
-## Funcionalidades implementadas na base inicial
+## Funcionalidades implementadas
 
 - Landing page institucional
 - Dashboard visual de indicadores
-- Backoffice de gestão de casos
-- Painel de relatórios executivos
+- Backoffice com casos em aberto
+- Formulário de submissão de manifestações
+- Filtros por status e pesquisa
+- Exportação de relatórios para Excel
 - Seção de configuração e conformidade
 
 ## Estrutura sugerida
@@ -65,4 +67,4 @@ public/
 
 ## Estado do projeto
 
-A base do frontend foi criada e a interface inicial já está pronta para continuar a evolução do sistema.
+A base do frontend foi desenvolvida e a interface já inclui funcionalidades úteis para avaliação e continuação do sistema.

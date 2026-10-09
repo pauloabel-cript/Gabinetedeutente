@@ -1,4 +1,5 @@
-import { useState, type ChangeEvent } from 'react'
+import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import * as XLSX from 'xlsx'
 import {
   Activity,
   ArrowRight,
@@ -9,6 +10,7 @@ import {
   FileSpreadsheet,
   HeartHandshake,
   MessageSquareText,
+  Search,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -17,14 +19,61 @@ import {
 } from 'lucide-react'
 
 type TabKey = 'portal' | 'dashboard' | 'reports' | 'config'
+type ManifestationType = 'Reclamação' | 'Sugestão' | 'Elogio'
+type Channel = 'Portal' | 'WhatsApp' | 'SMS' | 'Presencial'
+type Priority = 'Alta' | 'Média' | 'Baixa'
+
+type CaseItem = {
+  id: string
+  type: ManifestationType
+  status: string
+  priority: Priority
+  date: string
+  channel: Channel
+  owner: string
+  description: string
+}
 
 type FormState = {
   name: string
-  category: string
-  channel: string
+  category: ManifestationType
+  channel: Channel
   message: string
   isAnonymous: boolean
 }
+
+const initialCases: CaseItem[] = [
+  {
+    id: 'UG-2408',
+    type: 'Reclamação',
+    status: 'Em análise',
+    priority: 'Alta',
+    date: '09/10/2026',
+    channel: 'Portal',
+    owner: 'Dra. N. Silva',
+    description: 'Problemas de demora no atendimento de urgência.'
+  },
+  {
+    id: 'UG-2407',
+    type: 'Sugestão',
+    status: 'Em revisão',
+    priority: 'Média',
+    date: '08/10/2026',
+    channel: 'WhatsApp',
+    owner: 'Unidade de Qualidade',
+    description: 'Sugerir melhoria na triagem telefónica.'
+  },
+  {
+    id: 'UG-2405',
+    type: 'Elogio',
+    status: 'Respondida',
+    priority: 'Baixa',
+    date: '07/10/2026',
+    channel: 'SMS',
+    owner: 'Gabinete do Utente',
+    description: 'Reconhecimento ao apoio prestado pela equipa.'
+  }
+]
 
 const metrics = [
   { label: 'Manifestações hoje', value: '184', accent: 'bg-cyan-500/15 text-cyan-200', icon: MessageSquareText },
@@ -37,12 +86,6 @@ const citizenActions = [
   { title: 'Registar manifestação', detail: 'Submeter reclamação, sugestão ou elogio em segundos.', badge: 'Novo', icon: MessageSquareText },
   { title: 'Consultar estado', detail: 'Acompanhar protocolo e prazo de resposta.', badge: 'Ativo', icon: Activity },
   { title: 'Falar com a equipa', detail: 'Solicitar apoio e receber resposta por WhatsApp/SMS.', badge: 'Suporte', icon: HeartHandshake }
-]
-
-const cases = [
-  { id: 'UG-2408', type: 'Reclamação', status: 'Em análise', priority: 'Alta', date: '09/10/2026', channel: 'Portal', owner: 'Dra. N. Silva' },
-  { id: 'UG-2407', type: 'Sugestão', status: 'Em revisão', priority: 'Média', date: '08/10/2026', channel: 'WhatsApp', owner: 'Unidade de Qualidade' },
-  { id: 'UG-2405', type: 'Elogio', status: 'Respondida', priority: 'Baixa', date: '07/10/2026', channel: 'SMS', owner: 'Gabinete do Utente' }
 ]
 
 const reportCards = [
@@ -83,6 +126,21 @@ const initialForm: FormState = {
 function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('portal')
   const [form, setForm] = useState<FormState>(initialForm)
+  const [cases, setCases] = useState<CaseItem[]>(initialCases)
+  const [statusFilter, setStatusFilter] = useState('Todos')
+  const [search, setSearch] = useState('')
+
+  const filteredCases = useMemo(() => {
+    return cases.filter((item) => {
+      const matchesStatus = statusFilter === 'Todos' || item.status === statusFilter
+      const matchesSearch =
+        item.id.toLowerCase().includes(search.toLowerCase()) ||
+        item.type.toLowerCase().includes(search.toLowerCase()) ||
+        item.description.toLowerCase().includes(search.toLowerCase())
+
+      return matchesStatus && matchesSearch
+    })
+  }, [cases, search, statusFilter])
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -96,6 +154,49 @@ function App() {
     }
 
     setForm((previous) => ({ ...previous, [name]: value }))
+  }
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!form.message.trim()) {
+      return
+    }
+
+    const nextId = `UG-${Math.floor(1000 + Math.random() * 9000)}`
+
+    const newCase: CaseItem = {
+      id: nextId,
+      type: form.category,
+      status: 'Em análise',
+      priority: 'Média',
+      date: new Date().toLocaleDateString('pt-MZ'),
+      channel: form.channel,
+      owner: form.isAnonymous ? 'Anonimizado' : form.name || 'Utente externo',
+      description: form.message
+    }
+
+    setCases((previous) => [newCase, ...previous])
+    setForm(initialForm)
+    setActiveTab('dashboard')
+  }
+
+  const exportExcel = () => {
+    const payload = filteredCases.map((item) => ({
+      Código: item.id,
+      Tipo: item.type,
+      Status: item.status,
+      Prioridade: item.priority,
+      Canal: item.channel,
+      Responsável: item.owner,
+      Data: item.date,
+      Descrição: item.description
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(payload)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Manifestações')
+    XLSX.writeFile(workbook, 'gabinete-do-utente-relatorio.xlsx')
   }
 
   return (
@@ -149,11 +250,11 @@ function App() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <button type="button" className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-medium text-slate-950 transition hover:bg-cyan-400">
+                  <button type="button" onClick={() => setActiveTab('portal')} className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-medium text-slate-950 transition hover:bg-cyan-400">
                     Faço a minha manifestação
                     <ArrowRight className="h-4 w-4" />
                   </button>
-                  <button type="button" className="rounded-xl border border-slate-700 bg-slate-950/60 px-5 py-3 font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
+                  <button type="button" onClick={() => setActiveTab('dashboard')} className="rounded-xl border border-slate-700 bg-slate-950/60 px-5 py-3 font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
                     Ver estado
                   </button>
                 </div>
@@ -207,7 +308,7 @@ function App() {
             </section>
 
             <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+              <form onSubmit={handleSubmit} className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
                 <div className="flex items-center gap-3">
                   <MessageSquareText className="h-6 w-6 text-cyan-300" />
                   <h3 className="text-2xl font-semibold text-white">Submeter manifestação</h3>
@@ -217,7 +318,7 @@ function App() {
                   <label className="block text-sm text-slate-300">
                     Nome / identificador
                     <input
-                      className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none ring-0 transition focus:border-cyan-500"
+                      className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none transition focus:border-cyan-500"
                       name="name"
                       value={form.name}
                       onChange={handleChange}
@@ -233,9 +334,9 @@ function App() {
                       value={form.category}
                       onChange={handleChange}
                     >
-                      <option>Reclamação</option>
-                      <option>Sugestão</option>
-                      <option>Elogio</option>
+                      <option value="Reclamação">Reclamação</option>
+                      <option value="Sugestão">Sugestão</option>
+                      <option value="Elogio">Elogio</option>
                     </select>
                   </label>
                 </div>
@@ -249,10 +350,10 @@ function App() {
                       value={form.channel}
                       onChange={handleChange}
                     >
-                      <option>Portal</option>
-                      <option>WhatsApp</option>
-                      <option>SMS</option>
-                      <option>Presencial</option>
+                      <option value="Portal">Portal</option>
+                      <option value="WhatsApp">WhatsApp</option>
+                      <option value="SMS">SMS</option>
+                      <option value="Presencial">Presencial</option>
                     </select>
                   </label>
 
@@ -280,11 +381,11 @@ function App() {
                 </label>
 
                 <div className="mt-5 flex justify-end">
-                  <button type="button" className="rounded-xl bg-emerald-500 px-4 py-2.5 font-medium text-slate-950 transition hover:bg-emerald-400">
+                  <button type="submit" className="rounded-xl bg-emerald-500 px-4 py-2.5 font-medium text-slate-950 transition hover:bg-emerald-400">
                     Enviar solicitação
                   </button>
                 </div>
-              </div>
+              </form>
 
               <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
                 <div className="flex items-center gap-3">
@@ -295,8 +396,8 @@ function App() {
                 <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-950/60 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Protocolo</p>
                   <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-900 p-3">
-                    <span className="font-semibold text-white">UG-2408</span>
-                    <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-200">Em análise</span>
+                    <span className="font-semibold text-white">{cases[0]?.id ?? 'UG-0001'}</span>
+                    <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-200">{cases[0]?.status ?? 'Em análise'}</span>
                   </div>
                 </div>
 
@@ -331,11 +432,31 @@ function App() {
 
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <h3 className="text-2xl font-semibold text-white">Casos em aberto</h3>
-                  <button type="button" className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-slate-200">
-                    Exportar tabela
-                  </button>
+
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-slate-300">
+                      <Search className="h-4 w-4" />
+                      <input
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        className="w-40 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
+                        placeholder="Procurar..."
+                      />
+                    </div>
+
+                    <select
+                      value={statusFilter}
+                      onChange={(event) => setStatusFilter(event.target.value)}
+                      className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none"
+                    >
+                      <option value="Todos">Todos</option>
+                      <option value="Em análise">Em análise</option>
+                      <option value="Em revisão">Em revisão</option>
+                      <option value="Respondida">Respondida</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="overflow-hidden rounded-2xl border border-slate-800">
@@ -350,7 +471,7 @@ function App() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800 bg-slate-900/60">
-                      {cases.map((item) => (
+                      {filteredCases.map((item) => (
                         <tr key={item.id}>
                           <td className="px-4 py-3 font-medium text-white">{item.id}</td>
                           <td className="px-4 py-3">{item.type}</td>
@@ -417,7 +538,7 @@ function App() {
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Exportação</p>
                   <h3 className="mt-2 text-2xl font-semibold text-white">Relatórios executivos</h3>
                 </div>
-                <button type="button" className="rounded-xl bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400">
+                <button type="button" onClick={exportExcel} className="rounded-xl bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400">
                   Exportar Excel
                 </button>
               </div>
