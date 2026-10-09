@@ -23,7 +23,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(59, 130, 246, 0.28), transparent 35%),
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.22), transparent 30%),
     linear-gradient(180deg, #020817 0%, #0f172a 100%);
 }
 
@@ -36,4 +36,8 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+#root {
+  min-height: 100vh;
 }

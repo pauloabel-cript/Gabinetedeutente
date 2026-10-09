@@ -1,16 +1,16 @@
 # Gabinete do Utente
 
-Aplicação web para interacção entre hospitais e utentes, com foco em gestão de reclamações, sugestões, elogios, notificações e relatórios executivos.
+Portal digital para interacção entre hospitais e utentes, com gestão de manifestações, relatórios, notificações e controlo de SLA.
 
 ## Visão geral
 
-Este projeto tem como objetivo centralizar a comunicação entre a instituição hospitalar e o cidadão, permitindo:
+A aplicação foi desenvolvida para facilitar a comunicação entre a instituição hospitalar e o cidadão, permitindo:
 
-- Registo de manifestações e acompanhamento do estado
-- Separação de reclamações, sugestões e elogios
-- Gestão de notificações por SMS e WhatsApp
-- Exportação para Excel com relatórios especializados
-- Painel de backoffice com gestão operacional e de SLAs
+- Registo e acompanhamento de reclamações, sugestões e elogios
+- Gestão de contactos por SMS e WhatsApp
+- Painel de trabalho para o gabinete do utente
+- Relatórios e exportação em Excel
+- Segurança, anonimato e conformidade legal
 
 ## Stack tecnológica
 
@@ -18,9 +18,8 @@ Este projeto tem como objetivo centralizar a comunicação entre a instituição
 - TypeScript
 - Vite
 - Tailwind CSS
-- SheetJS (XLSX)
 - Lucide React
-- Node.js
+- SheetJS (XLSX)
 
 ## Requisitos
 
@@ -33,23 +32,25 @@ Este projeto tem como objetivo centralizar a comunicação entre a instituição
 npm install
 ```
 
-## Execução em desenvolvimento
+## Execução em ambiente de desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-## Build de produção
+## Build para produção
 
 ```bash
 npm run build
 ```
 
-## Lint
+## Funcionalidades implementadas na base inicial
 
-```bash
-npm run lint
-```
+- Landing page institucional
+- Dashboard visual de indicadores
+- Backoffice de gestão de casos
+- Painel de relatórios executivos
+- Seção de configuração e conformidade
 
 ## Estrutura sugerida
 
@@ -64,4 +65,4 @@ public/
 
 ## Estado do projeto
 
-Este repositório foi inicializado com uma base de frontend em React + Vite para dar continuidade ao desenvolvimento do Gabinete do Utente.
+A base do frontend foi criada e a interface inicial já está pronta para continuar a evolução do sistema.
