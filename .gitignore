@@ -4,3 +4,6 @@ dist/
 .DS_Store
 .env
 npm-debug.log*
+server/node_modules/
+server/database.db
+
