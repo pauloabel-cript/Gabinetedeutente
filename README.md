@@ -1,18 +1,67 @@
-Visão Geral & Enquadramento Institucional:
-Hospital Central e Hospital Geral de Quelimane (MISAU — Moçambique).
-Funcionalidades Detalhadas:
-Portal do Cidadão: Registo de manifestações, anonimato protegido, geração de Protocolo e PIN, e consulta de estado.
-Painel do Gabinete (Backoffice): Organização e separação diária de reclamações, sugestões e elogios, filtros avançados, registo de chamadas e notas internas.
-Notificação ao Utente: Envio de SMS direto consumindo o saldo do cartão SIM da Vodacom/Movitel/TMCEL (sem tokens obrigatórios) e WhatsApp.
-Relatórios: Exportação nativa em livro Microsoft Excel (.xlsx) com 4 folhas especializadas e impressão executiva.
-Gestão de Utilizadores & SLA: Perfis de acesso (RBAC) e metas de prazos.
-Tabela de Modos de Envio de SMS:
-Explicação clara dos métodos (SIM direto vs. Gateway vs. Nuvem).
-Stack Tecnológica:
-React 19, TypeScript, Vite, Tailwind CSS, SheetJS (XLSX), Lucide React e Node.js.
-Estrutura de Pastas e Ficheiros do Projeto:
-Árvore descritiva com o papel de cada componente.
-Instruções de Instalação e Execução:
-Comandos npm install, npm run dev, npm run build e npm run lint.
-Conformidade Legal & Segurança:
-Enquadramento na Lei nº 3/2023 de Moçambique (Proteção de Dados Pessoais).
+# Gabinete do Utente
+
+Aplicação web para interacção entre hospitais e utentes, com foco em gestão de reclamações, sugestões, elogios, notificações e relatórios executivos.
+
+## Visão geral
+
+Este projeto tem como objetivo centralizar a comunicação entre a instituição hospitalar e o cidadão, permitindo:
+
+- Registo de manifestações e acompanhamento do estado
+- Separação de reclamações, sugestões e elogios
+- Gestão de notificações por SMS e WhatsApp
+- Exportação para Excel com relatórios especializados
+- Painel de backoffice com gestão operacional e de SLAs
+
+## Stack tecnológica
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- SheetJS (XLSX)
+- Lucide React
+- Node.js
+
+## Requisitos
+
+- Node.js 18+
+- npm 9+
+
+## Instalação
+
+```bash
+npm install
+```
+
+## Execução em desenvolvimento
+
+```bash
+npm run dev
+```
+
+## Build de produção
+
+```bash
+npm run build
+```
+
+## Lint
+
+```bash
+npm run lint
+```
+
+## Estrutura sugerida
+
+```text
+src/
+  App.tsx
+  main.tsx
+  index.css
+public/
+  favicon.svg
+```
+
+## Estado do projeto
+
+Este repositório foi inicializado com uma base de frontend em React + Vite para dar continuidade ao desenvolvimento do Gabinete do Utente.
