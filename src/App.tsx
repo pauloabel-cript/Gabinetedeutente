@@ -104,7 +104,7 @@ const distribution = [
 
 const configCards = [
   { title: 'Perfis de acesso', value: 'RBAC', detail: 'Administradores, operadores, qualidade e gestão.', icon: Users },
-  { title: 'SLA e prazos', value: '72h', detail: 'Monitorização de respostas e alertas automáticos.', icon: ShieldCheck },
+  { title: 'SLA e prazos', value: '72h', detail: 'Monitorização de respostas e alertos automáticos.', icon: ShieldCheck },
   { title: 'Notificações', value: 'SMS + WhatsApp', detail: 'Enviar mensagens directas ao utente.', icon: BellRing }
 ]
 
@@ -133,12 +133,12 @@ function App() {
   const filteredCases = useMemo(() => {
     return cases.filter((item) => {
       const matchesStatus = statusFilter === 'Todos' || item.status === statusFilter
-      const matchesSearch =
+      const matchSearch =
         item.id.toLowerCase().includes(search.toLowerCase()) ||
         item.type.toLowerCase().includes(search.toLowerCase()) ||
         item.description.toLowerCase().includes(search.toLowerCase())
 
-      return matchesStatus && matchesSearch
+      return matchesStatus && matchSearch
     })
   }, [cases, search, statusFilter])
 
@@ -240,13 +240,13 @@ function App() {
               <div>
                 <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-cyan-200">
                   <Sparkles className="h-3.5 w-3.5" />
-                  Solução digital hospitalar
+                  Portal aberto ao cidadão
                 </p>
                 <h2 className="max-w-xl text-4xl font-bold tracking-tight text-white md:text-5xl">
                   Conectar instituições, utentes e respostas em tempo real.
                 </h2>
                 <p className="mt-4 max-w-xl text-base text-slate-300">
-                  Um portal que centraliza reclamações, sugestões, elogios, alertas e relatórios para melhorar a comunicação entre o hospital e a comunidade.
+                  Sem login obrigatório para o cidadão. O utente pode apresentar uma reclamação, sugestão ou elogio e acompanhar o protocolo online.
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">

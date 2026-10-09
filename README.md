@@ -11,6 +11,7 @@ A aplicação foi desenvolvida para facilitar a comunicação entre a instituiç
 - Painel de trabalho para o gabinete do utente
 - Relatórios e exportação em Excel
 - Segurança, anonimato e conformidade legal
+- Portal livre para o cidadão, sem login obrigatório
 
 ## Stack tecnológica
 
@@ -47,10 +48,10 @@ npm run build
 ## Funcionalidades implementadas
 
 - Landing page institucional
-- Dashboard visual de indicadores
-- Backoffice com casos em aberto
+- Portal do cidadão sem login obrigatório
 - Formulário de submissão de manifestações
-- Filtros por status e pesquisa
+- Consulta de estado do pedido
+- Dashboard do backoffice com filtros
 - Exportação de relatórios para Excel
 - Seção de configuração e conformidade
 
@@ -67,4 +68,4 @@ public/
 
 ## Estado do projeto
 
-A base do frontend foi desenvolvida e a interface já inclui funcionalidades úteis para avaliação e continuação do sistema.
+A base do frontend foi desenvolvida e a interface já inclui funcionalidades úteis para avaliação e continuação do sistema, com a experiência do cidadão aberta e sem login obrigatório.
